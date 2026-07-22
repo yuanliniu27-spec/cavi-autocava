@@ -231,7 +231,7 @@
       display: flex;
       flex-direction: column;
       background: #fff;
-      overflow-y: auto;
+      overflow: hidden;
     }
 
     .cavi-main-inner {
@@ -242,6 +242,9 @@
       flex: 1;
       display: flex;
       flex-direction: column;
+      height: 100%;
+      min-height: 0;
+      overflow: hidden;
     }
 
     /* View toggle */
@@ -281,6 +284,27 @@
       background: #fff;
       color: var(--cavi-dark);
       box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    }
+
+    .cavi-conversation-viewport {
+      flex: 1 1 auto;
+      min-height: 220px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .cavi-conversation-intro {
+      flex: 0 0 auto;
+      max-height: var(--intro-visible-height, none);
+      overflow: hidden;
+      opacity: calc(1 - var(--intro-collapse-progress, 0));
+      transform: translateY(calc(-24px * var(--intro-collapse-progress, 0)));
+      transition: max-height 0.35s ease, opacity 0.35s ease, transform 0.35s ease;
+    }
+
+    .cavi-conversation-intro.is-hidden {
+      display: none;
     }
 
     /* Hero header */
@@ -451,6 +475,7 @@
       padding: 16px;
       background: #fff;
       margin-bottom: 32px;
+      flex: 0 0 auto;
     }
 
     .cavi-standalone-input-top {
@@ -558,23 +583,16 @@
 
     /* Messages area */
     .cavi-standalone-messages {
-      overflow-y: auto;
-      margin-bottom: 16px;
+      flex: 1 1 auto;
       min-height: 0;
-      max-height: 0;
-      transition: max-height 0.35s ease, min-height 0.35s ease, margin 0.35s ease;
-    }
-
-    .cavi-standalone-messages.has-messages {
-      min-height: 120px;
-      max-height: 360px;
-      margin-top: 8px;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      scrollbar-gutter: stable;
+      margin-bottom: 16px;
     }
 
     .cavi-standalone-messages:empty {
-      display: block;
-      min-height: 0;
-      max-height: 0;
+      flex: 0 0 0;
       margin: 0;
     }
 
@@ -628,6 +646,10 @@
     .cavi-trust-section {
       margin-top: auto;
       padding-top: 24px;
+    }
+
+    .cavi-main-inner.conversation-active .cavi-trust-section {
+      display: none;
     }
 
     .cavi-mini-stats {
@@ -1439,6 +1461,8 @@
             </div>
           </div>
 
+          <section class="cavi-conversation-viewport" id="conversationViewport" aria-label="Conversación con Cavi">
+            <div class="cavi-conversation-intro" id="conversationIntro">
           <!-- Chat hero -->
           <div class="cavi-chat-hero">
             <div class="cavi-chat-hero-left">
@@ -1489,9 +1513,11 @@
               <span class="chip-arrow">→</span>
             </button>
           </div>
+            </div>
 
           <!-- Messages area -->
-          <div class="cavi-standalone-messages" id="standaloneMessages"></div>
+            <div class="cavi-standalone-messages" id="standaloneMessages" role="log" aria-live="polite" aria-relevant="additions text" tabindex="0"></div>
+          </section>
 
           <!-- Chat input -->
           <div class="cavi-standalone-input-wrap">
@@ -1665,6 +1691,7 @@
     </div>
   </div>
 
+  <script src="cavi-chat-state.js"></script>
   <script>
     const caviStandalone = document.getElementById('caviStandalone');
     const caviPanelFab = document.getElementById('caviPanelFab');
