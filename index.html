@@ -1,0 +1,1086 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cavi - Asesor de IA para tu proximo auto | AutoCava</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --cavi-purple: #534AB7;
+      --cavi-teal: #1D9E75;
+      --cavi-yellow: #FFD500;
+      --cavi-dark: #1a1a1a;
+      --cavi-gray: #6b7280;
+      --cavi-light: #f8f7f4;
+      --cavi-border: #e5e5e5;
+      --cavi-shadow: 0 8px 32px rgba(0,0,0,0.12);
+      --cavi-radius: 16px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #ffffff;
+      color: var(--cavi-dark);
+      overflow-x: hidden;
+    }
+
+    /* ===== AUTO CAVA HOMEPAGE ===== */
+    .autocava-page {
+      min-height: 100vh;
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+
+    .autocava-page.hidden {
+      display: none;
+      opacity: 0;
+      pointer-events: none;
+      transform: scale(0.98);
+    }
+
+    /* Yellow Navbar */
+    .ac-nav {
+      background: var(--cavi-yellow);
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    .ac-nav-left {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+    }
+
+    .ac-logo {
+      font-weight: 900;
+      font-size: 24px;
+      letter-spacing: -1px;
+      color: #000;
+      line-height: 1;
+    }
+
+    .ac-logo span {
+      display: block;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #000;
+      margin-top: 2px;
+    }
+
+    .ac-menu {
+      display: flex;
+      gap: 28px;
+      list-style: none;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .ac-menu a {
+      text-decoration: none;
+      color: #000;
+      transition: opacity 0.2s;
+    }
+
+    .ac-menu a:hover {
+      opacity: 0.7;
+    }
+
+    .ac-login {
+      background: transparent;
+      border: 2px solid #000;
+      color: #000;
+      padding: 8px 20px;
+      border-radius: 24px;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .ac-login:hover {
+      background: #000;
+      color: var(--cavi-yellow);
+    }
+
+    /* Hero Section */
+    .ac-hero {
+      position: relative;
+      height: 520px;
+      background: linear-gradient(135deg, #1a2a4a 0%, #0f1a2e 100%);
+      display: flex;
+      align-items: center;
+      padding: 0 48px;
+      overflow: hidden;
+    }
+
+    .ac-hero::before {
+      content: '';
+      position: absolute;
+      right: 0;
+      top: 0;
+      width: 65%;
+      height: 100%;
+      background: url('https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=1200&auto=format&fit=crop') center/cover;
+      opacity: 0.85;
+      mask-image: linear-gradient(to right, transparent 0%, black 40%);
+      -webkit-mask-image: linear-gradient(to right, transparent 0%, black 40%);
+    }
+
+    .ac-hero-content {
+      position: relative;
+      z-index: 2;
+      max-width: 520px;
+    }
+
+    .ac-badge {
+      display: inline-block;
+      background: var(--cavi-yellow);
+      color: #000;
+      padding: 6px 14px;
+      border-radius: 4px;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+
+    .ac-hero h1 {
+      font-size: 42px;
+      font-weight: 800;
+      color: #fff;
+      line-height: 1.15;
+      margin-bottom: 24px;
+    }
+
+    .ac-hero h1 strong {
+      color: var(--cavi-yellow);
+    }
+
+    .ac-search-box {
+      background: rgba(255,255,255,0.95);
+      padding: 20px;
+      border-radius: 12px;
+      display: flex;
+      gap: 12px;
+      backdrop-filter: blur(10px);
+    }
+
+    .ac-search-box select {
+      flex: 1;
+      padding: 14px 16px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 14px;
+      background: #fff;
+      min-width: 160px;
+    }
+
+    .ac-search-box button {
+      background: var(--cavi-yellow);
+      color: #000;
+      border: none;
+      padding: 14px 32px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 15px;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .ac-search-box button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(255,213,0,0.4);
+    }
+
+    /* Brands Section */
+    .ac-brands {
+      padding: 48px;
+      background: #fff;
+    }
+
+    .ac-brands h2 {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .ac-brands p {
+      color: var(--cavi-gray);
+      font-size: 14px;
+      margin-bottom: 28px;
+    }
+
+    .brand-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 24px;
+    }
+
+    .brand-item {
+      text-align: center;
+      padding: 20px;
+      border: 1px solid var(--cavi-border);
+      border-radius: 12px;
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+
+    .brand-item:hover {
+      border-color: var(--cavi-purple);
+      box-shadow: 0 4px 16px rgba(83,74,183,0.1);
+    }
+
+    .brand-item .icon {
+      width: 48px;
+      height: 48px;
+      background: #f0f0f0;
+      border-radius: 50%;
+      margin: 0 auto 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
+
+    .brand-item h4 {
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .brand-item span {
+      font-size: 12px;
+      color: var(--cavi-gray);
+    }
+
+    /* ===== CAVI WIDGET ===== */
+    .cavi-widget {
+      position: fixed;
+      right: 24px;
+      top: 100px;
+      width: 380px;
+      height: calc(100vh - 130px);
+      max-height: 680px;
+      background: #fff;
+      border-radius: var(--cavi-radius);
+      box-shadow: var(--cavi-shadow);
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .cavi-widget.collapsing {
+      opacity: 0;
+      transform: scale(0.3) translateX(60%);
+      pointer-events: none;
+      transform-origin: right top;
+    }
+
+    .cavi-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px;
+      background: linear-gradient(135deg, #faf8ff 0%, #f0f4ff 100%);
+      border-bottom: 1px solid rgba(83,74,183,0.1);
+    }
+
+    .cavi-header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .cavi-fullscreen-btn {
+      width: 32px;
+      height: 32px;
+      border: none;
+      background: rgba(83,74,183,0.1);
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      color: var(--cavi-purple);
+    }
+
+    .cavi-fullscreen-btn:hover {
+      background: var(--cavi-purple);
+      color: #fff;
+    }
+
+    .cavi-logo {
+      font-size: 20px;
+      font-weight: 900;
+      color: var(--cavi-purple);
+      letter-spacing: -1px;
+    }
+
+    .cavi-status {
+      width: 8px;
+      height: 8px;
+      background: var(--cavi-teal);
+      border-radius: 50%;
+      margin-left: 4px;
+    }
+
+    .cavi-header-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .cavi-header-actions button {
+      width: 32px;
+      height: 32px;
+      border: none;
+      background: transparent;
+      border-radius: 8px;
+      cursor: pointer;
+      color: var(--cavi-gray);
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .cavi-header-actions button:hover {
+      background: rgba(0,0,0,0.05);
+      color: var(--cavi-dark);
+    }
+
+    .cavi-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+      background: linear-gradient(180deg, #fff 0%, #fafaff 100%);
+    }
+
+    .cavi-avatar-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .cavi-avatar {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #e8e4ff 0%, #d4e7ff 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      flex-shrink: 0;
+      position: relative;
+    }
+
+    .cavi-avatar::after {
+      content: 'Hola \1F44B';
+      position: absolute;
+      top: -4px;
+      right: -24px;
+      background: var(--cavi-yellow);
+      color: #000;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 4px 8px;
+      border-radius: 12px;
+    }
+
+    .cavi-greeting h3 {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--cavi-purple);
+      margin-bottom: 4px;
+    }
+
+    .cavi-greeting p {
+      font-size: 13px;
+      color: var(--cavi-gray);
+    }
+
+    .cavi-message {
+      background: #fff;
+      border: 1px solid var(--cavi-border);
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 20px;
+      font-size: 14px;
+      line-height: 1.6;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+
+    .cavi-section-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--cavi-gray);
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .cavi-suggestions {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+
+    .cavi-suggestion {
+      background: #fff;
+      border: 1px solid var(--cavi-border);
+      border-radius: 12px;
+      padding: 14px 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      transition: all 0.2s;
+      text-align: left;
+      width: 100%;
+      font-family: inherit;
+      font-size: 13px;
+      line-height: 1.5;
+      color: var(--cavi-dark);
+    }
+
+    .cavi-suggestion:hover {
+      border-color: var(--cavi-purple);
+      box-shadow: 0 4px 12px rgba(83,74,183,0.12);
+      transform: translateX(4px);
+    }
+
+    .cavi-suggestion .sugg-icon {
+      width: 28px;
+      height: 28px;
+      background: linear-gradient(135deg, var(--cavi-purple), #7c6ee6);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+
+    .cavi-specialties {
+      background: linear-gradient(135deg, #faf8ff 0%, #f5f3ff 100%);
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 20px;
+    }
+
+    .cavi-specialties-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      cursor: pointer;
+    }
+
+    .cavi-specialties-header h4 {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--cavi-dark);
+    }
+
+    .cavi-specialty-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .cavi-specialty {
+      background: #fff;
+      border: 1px solid var(--cavi-border);
+      border-radius: 10px;
+      padding: 12px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .cavi-specialty:hover {
+      border-color: var(--cavi-purple);
+      background: #f8f7ff;
+    }
+
+    .cavi-specialty .sp-icon {
+      font-size: 20px;
+      margin-bottom: 6px;
+    }
+
+    .cavi-specialty span {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--cavi-dark);
+      display: block;
+    }
+
+    .cavi-specialty small {
+      font-size: 10px;
+      color: var(--cavi-gray);
+    }
+
+    .cavi-input-area {
+      padding: 16px;
+      border-top: 1px solid var(--cavi-border);
+      background: #fff;
+    }
+
+    .cavi-input-box {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: #f5f5f5;
+      border-radius: 28px;
+      padding: 6px 6px 6px 18px;
+    }
+
+    .cavi-input-box input {
+      flex: 1;
+      border: none;
+      background: transparent;
+      outline: none;
+      font-size: 14px;
+      font-family: inherit;
+    }
+
+    .cavi-input-box input::placeholder {
+      color: #999;
+    }
+
+    .cavi-send-btn {
+      width: 40px;
+      height: 40px;
+      border: none;
+      background: var(--cavi-purple);
+      color: #fff;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .cavi-send-btn:hover {
+      background: #433a9e;
+      transform: scale(1.05);
+    }
+
+    .cavi-disclaimer {
+      text-align: center;
+      font-size: 11px;
+      color: #999;
+      margin-top: 10px;
+    }
+
+    /* Widget chat messages */
+    .cavi-msg {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 16px;
+      align-items: flex-start;
+    }
+
+    .cavi-msg.user {
+      flex-direction: row-reverse;
+    }
+
+    .cavi-msg .msg-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+
+    .cavi-msg.bot .msg-avatar { background: #f0edff; }
+    .cavi-msg.user .msg-avatar { background: var(--cavi-purple); color: #fff; }
+
+    .cavi-msg .msg-bubble {
+      max-width: 280px;
+      padding: 12px 16px;
+      border-radius: 16px;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .cavi-msg.bot .msg-bubble {
+      background: #fff;
+      border: 1px solid var(--cavi-border);
+      border-top-left-radius: 4px;
+    }
+
+    .cavi-msg.user .msg-bubble {
+      background: var(--cavi-purple);
+      color: #fff;
+      border-top-right-radius: 4px;
+    }
+
+    /* CAVI Floating Action Button */
+    .cavi-fab {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      border: none;
+      background: radial-gradient(circle at 30% 30%, #fff8fb 0%, #f3e8ff 50%, #ede9fe 100%);
+      box-shadow: 0 6px 24px rgba(139, 92, 246, 0.25), inset 0 0 0 1px rgba(255,255,255,0.6);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 9999;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      padding: 0;
+    }
+
+    .cavi-fab.visible {
+      display: flex;
+      animation: caviFabPop 0.35s ease;
+    }
+
+    @keyframes caviFabPop {
+      0% { transform: scale(0) translateY(20px); opacity: 0; }
+      60% { transform: scale(1.1) translateY(-4px); opacity: 1; }
+      100% { transform: scale(1) translateY(0); opacity: 1; }
+    }
+
+    .cavi-fab:hover {
+      transform: scale(1.08);
+      box-shadow: 0 8px 28px rgba(139, 92, 246, 0.35), inset 0 0 0 1px rgba(255,255,255,0.6);
+    }
+
+    .cavi-fab-text {
+      font-size: 22px;
+      font-weight: 900;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      letter-spacing: -2px;
+      background: linear-gradient(135deg, #8b5cf6 0%, #d946ef 50%, #f43f5e 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1;
+      padding-left: 2px;
+    }
+
+    /* Floating WhatsApp */
+    .cavi-whatsapp-float {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      width: 60px;
+      height: 60px;
+      background: #25D366;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 28px;
+      box-shadow: 0 4px 16px rgba(37,211,102,0.4);
+      cursor: pointer;
+      z-index: 999;
+      transition: transform 0.2s;
+    }
+
+    .cavi-whatsapp-float:hover {
+      transform: scale(1.1);
+    }
+
+    .cavi-whatsapp-float.hidden {
+      display: none;
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 1200px) {
+      .cavi-widget {
+        width: 340px;
+      }
+    }
+
+    @media (max-width: 1024px) {
+      .ac-menu {
+        display: none;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .ac-hero {
+        padding: 32px 24px;
+        height: auto;
+        min-height: 420px;
+      }
+      .ac-hero h1 {
+        font-size: 28px;
+      }
+      .ac-search-box {
+        flex-direction: column;
+      }
+      .brand-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+      .cavi-widget {
+        right: 12px;
+        top: auto;
+        bottom: 90px;
+        width: calc(100% - 24px);
+        height: 60vh;
+        max-height: 520px;
+      }
+    }
+
+    /* Animations */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .animate-in {
+      animation: fadeInUp 0.6s ease forwards;
+    }
+
+    .typing-dot {
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      background: var(--cavi-gray);
+      border-radius: 50%;
+      margin: 0 2px;
+      animation: typing 1.4s infinite;
+    }
+
+    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes typing {
+      0%, 60%, 100% { transform: translateY(0); }
+      30% { transform: translateY(-4px); }
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(83,74,183,0.3);
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(83,74,183,0.5);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== AUTO CAVA HOMEPAGE ===== -->
+  <div class="autocava-page" id="autocavaPage">
+    <nav class="ac-nav">
+      <div class="ac-nav-left">
+        <div class="ac-logo">
+          AUTO CAVA
+          <span>Encuentra tu auto ideal</span>
+        </div>
+        <ul class="ac-menu">
+          <li><a href="#" onclick="goToCaviEmbed('https://www.autocava.com.mx/'); return false;">Inicio</a></li>
+          <li><a href="#" onclick="goToCaviEmbed('https://www.autocava.com.mx/finance'); return false;">Financiamiento</a></li>
+          <li><a href="#" onclick="goToCaviEmbed('https://www.autocava.com.mx/auto'); return false;">Autos</a></li>
+          <li><a href="#" onclick="goToCaviEmbed('https://www.autocava.com.mx/auto/library'); return false;">Filtrar</a></li>
+          <li><a href="#" onclick="goToCaviEmbed('https://www.autocava.com.mx/rank'); return false;">Autos Mas vendidos</a></li>
+        </ul>
+      </div>
+      <button class="ac-login">Iniciar sesion</button>
+    </nav>
+
+    <section class="ac-hero">
+      <div class="ac-hero-content">
+        <div class="ac-badge">Autos en venta</div>
+        <h1>Autos en venta que se adaptan a tu vida</h1>
+        <div class="ac-search-box">
+          <select>
+            <option>Todas las marcas</option>
+            <option>Nissan</option>
+            <option>Chevrolet</option>
+            <option>Volkswagen</option>
+            <option>Toyota</option>
+            <option>Kia</option>
+            <option>Mazda</option>
+          </select>
+          <select>
+            <option>Todas las series</option>
+            <option>Sedan</option>
+            <option>SUV</option>
+            <option>Pick up</option>
+            <option>Hatchback</option>
+          </select>
+          <button>Buscar</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="ac-brands">
+      <h2>Explora por marca</h2>
+      <p>Mas de 70 marcas, 600 series y 2,300 modelos</p>
+      <div class="brand-grid">
+        <div class="brand-item"><div class="icon">🚗</div><h4>Nissan</h4><span>16 series</span></div>
+        <div class="brand-item"><div class="icon">🚙</div><h4>Chevrolet</h4><span>25 series</span></div>
+        <div class="brand-item"><div class="icon">🚕</div><h4>Volkswagen</h4><span>19 series</span></div>
+        <div class="brand-item"><div class="icon">🚐</div><h4>Toyota</h4><span>25 series</span></div>
+        <div class="brand-item"><div class="icon">🚓</div><h4>Kia</h4><span>12 series</span></div>
+        <div class="brand-item"><div class="icon">🚑</div><h4>Mazda</h4><span>12 series</span></div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ===== CAVI WIDGET ===== -->
+  <div class="cavi-widget" id="caviWidget">
+    <div class="cavi-header">
+      <div class="cavi-header-left">
+        <button class="cavi-fullscreen-btn" id="fullscreenBtn" title="Abrir Cavi en autocava.com.mx/cavi">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+          </svg>
+        </button>
+        <div class="cavi-logo">CAVI</div>
+        <div class="cavi-status"></div>
+      </div>
+      <div class="cavi-header-actions">
+        <button id="minimizeBtn" title="Minimizar">−</button>
+        <button id="closeBtn" title="Cerrar">×</button>
+      </div>
+    </div>
+
+    <div class="cavi-body" id="caviBody">
+      <div class="cavi-avatar-row">
+        <div class="cavi-avatar">👩‍💼</div>
+        <div class="cavi-greeting">
+          <h3>¡Hola! Soy Cavi</h3>
+          <p>Asesor de compra de vehiculos</p>
+        </div>
+      </div>
+
+      <div class="cavi-message">
+        Desde recomendaciones de autos personalizadas hasta detalles de financiamiento, estoy aqui para guiarte. ¿En que puedo asistirte hoy?
+      </div>
+
+      <div class="cavi-section-title">Prueba a preguntarme esto:</div>
+      <div class="cavi-suggestions">
+        <button class="cavi-suggestion" onclick="sendSuggestion(this)">
+          <span class="sugg-icon">🚗</span>
+          <span>¿Que plan de prestamo es mejor, el de 48 meses o el de 72 meses? ¿Por que?</span>
+        </button>
+        <button class="cavi-suggestion" onclick="sendSuggestion(this)">
+          <span class="sugg-icon">🚙</span>
+          <span>Recomiendame algunos modelos de coche adecuados para desplazamientos diarios por la ciudad.</span>
+        </button>
+        <button class="cavi-suggestion" onclick="sendSuggestion(this)">
+          <span class="sugg-icon">💰</span>
+          <span>¿Que coche se puede comprar con unos ingresos mensuales de $25,000 pesos?</span>
+        </button>
+      </div>
+
+      <div class="cavi-specialties">
+        <div class="cavi-specialties-header">
+          <h4>Areas de especializacion</h4>
+          <span>↓</span>
+        </div>
+        <div class="cavi-specialty-grid">
+          <div class="cavi-specialty" onclick="triggerCTA('recommend')">
+            <div class="sp-icon">🚘</div>
+            <span>Modelos recomendados</span>
+            <small>70% de aprobacion</small>
+          </div>
+          <div class="cavi-specialty" onclick="triggerCTA('credit')">
+            <div class="sp-icon">🧮</div>
+            <span>Calculadora de credito</span>
+            <small>Mensualidad ideal</small>
+          </div>
+          <div class="cavi-specialty" onclick="triggerCTA('loan')">
+            <div class="sp-icon">📝</div>
+            <span>Aplicar prestamo</span>
+            <small>Pre-aprobacion</small>
+          </div>
+          <div class="cavi-specialty" onclick="triggerCTA('advisor')">
+            <div class="sp-icon">👨‍💼</div>
+            <span>Asesor experto</span>
+            <small>WhatsApp directo</small>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cavi-input-area">
+      <div class="cavi-input-box">
+        <input type="text" id="caviInput" placeholder="Escribe tu mensaje..." onkeypress="handleEnter(event)">
+        <button class="cavi-send-btn" onclick="sendMessage()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="22" y1="2" x2="11" y2="13"></line>
+            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+          </svg>
+        </button>
+      </div>
+      <div class="cavi-disclaimer">El asistente puede cometer errores.</div>
+    </div>
+  </div>
+
+  <!-- CAVI Floating Action Button -->
+  <button class="cavi-fab" id="caviFab" onclick="goToCavi()" title="Abrir Cavi">
+    <span class="cavi-fab-text">CA</span>
+  </button>
+
+  <!-- WhatsApp Float -->
+  <div class="cavi-whatsapp-float" id="whatsappFloat">💬</div>
+
+  <script>
+    const caviWidget = document.getElementById('caviWidget');
+    const caviFab = document.getElementById('caviFab');
+    const whatsappFloat = document.getElementById('whatsappFloat');
+    const fullscreenBtn = document.getElementById('fullscreenBtn');
+    const minimizeBtn = document.getElementById('minimizeBtn');
+    const closeBtn = document.getElementById('closeBtn');
+
+    let isMinimized = false;
+    let isClosed = false;
+
+    // Navigate to Cavi standalone page
+    function goToCavi() {
+      window.location.href = 'cavi-standalone.html';
+    }
+
+    // Navigate to Cavi standalone with an embedded page
+    function goToCaviEmbed(url) {
+      window.location.href = 'cavi-standalone.html?embed=' + encodeURIComponent(url);
+    }
+
+    // Navigate to Cavi standalone with a pre-filled message
+    function goToCaviMsg(msg) {
+      window.location.href = 'cavi-standalone.html?msg=' + encodeURIComponent(msg);
+    }
+
+    // Fullscreen button -> go to Cavi standalone
+    fullscreenBtn.addEventListener('click', goToCavi);
+
+    // Minimize widget into floating CA orb
+    minimizeBtn.addEventListener('click', minimizeWidget);
+
+    function minimizeWidget() {
+      caviWidget.classList.add('collapsing');
+      setTimeout(() => {
+        caviWidget.style.display = 'none';
+        caviWidget.classList.remove('collapsing');
+        caviFab.classList.add('visible');
+        whatsappFloat.classList.add('hidden');
+        isMinimized = true;
+      }, 450);
+    }
+
+    // Close widget
+    closeBtn.addEventListener('click', () => {
+      caviWidget.style.display = 'none';
+      whatsappFloat.style.display = 'flex';
+      isClosed = true;
+    });
+
+    // Send message in widget
+    function handleEnter(e) {
+      if (e.key === 'Enter') sendMessage();
+    }
+
+    function sendMessage() {
+      const input = document.getElementById('caviInput');
+      const text = input.value.trim();
+      if (!text) return;
+
+      addWidgetMessage(text, 'user');
+      input.value = '';
+
+      setTimeout(() => {
+        addWidgetMessage('Entiendo. Para darte la mejor recomendacion, ¿podrias decirme tu presupuesto maximo y si buscas auto nuevo o seminuevo?', 'bot');
+      }, 800);
+    }
+
+    function sendSuggestion(btn) {
+      const text = btn.querySelector('span:last-child').textContent;
+      addWidgetMessage(text, 'user');
+      setTimeout(() => {
+        addWidgetMessage('Excelente pregunta.dejame analizar las opciones mas convenientes para tu perfil.', 'bot');
+      }, 800);
+    }
+
+    function addWidgetMessage(text, sender) {
+      const body = document.getElementById('caviBody');
+      const msgDiv = document.createElement('div');
+      msgDiv.className = 'cavi-msg ' + sender;
+      msgDiv.innerHTML =
+        '<div class="msg-avatar">' + (sender === 'user' ? '👤' : '👩‍💼') + '</div>' +
+        '<div class="msg-bubble">' + text + '</div>';
+      body.appendChild(msgDiv);
+      body.scrollTop = body.scrollHeight;
+    }
+
+    // Widget specialties -> navigate to Cavi standalone with message
+    function triggerCTA(type) {
+      let message = '';
+      switch (type) {
+        case 'recommend':
+          message = 'Quiero que me recomiendes un auto';
+          break;
+        case 'credit':
+          message = 'Quiero calcular mi mensualidad';
+          break;
+        case 'loan':
+          message = 'Quiero aplicar a un prestamo';
+          break;
+        case 'advisor':
+          message = 'Quiero hablar con un asesor';
+          break;
+      }
+      goToCaviMsg(message);
+    }
+
+    // WhatsApp float click
+    whatsappFloat.addEventListener('click', () => {
+      alert('Se abriria WhatsApp con un asesor de AutoCava');
+    });
+  </script>
+</body>
+</html>
