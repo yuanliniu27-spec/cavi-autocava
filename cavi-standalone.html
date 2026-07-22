@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Cavi - Asesor de IA | AutoCava</title>
+  <link rel="icon" href="data:,">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -231,7 +232,7 @@
       display: flex;
       flex-direction: column;
       background: #fff;
-      overflow-y: auto;
+      overflow: hidden;
     }
 
     .cavi-main-inner {
@@ -242,6 +243,20 @@
       flex: 1;
       display: flex;
       flex-direction: column;
+      height: 100%;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .cavi-standalone:has(.cavi-main-inner.conversation-active) {
+      height: 100dvh;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .cavi-main-inner.conversation-active {
+      height: 100dvh;
+      max-height: 100%;
     }
 
     /* View toggle */
@@ -281,6 +296,27 @@
       background: #fff;
       color: var(--cavi-dark);
       box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    }
+
+    .cavi-conversation-viewport {
+      flex: 1 1 auto;
+      min-height: 220px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .cavi-conversation-intro {
+      flex: 0 0 auto;
+      max-height: var(--intro-visible-height, none);
+      overflow: hidden;
+      opacity: calc(1 - var(--intro-collapse-progress, 0));
+      transform: translateY(calc(-24px * var(--intro-collapse-progress, 0)));
+      transition: max-height 0.35s ease, opacity 0.35s ease, transform 0.35s ease;
+    }
+
+    .cavi-conversation-intro.is-hidden {
+      display: none;
     }
 
     /* Hero header */
@@ -386,10 +422,6 @@
       transition: margin 0.35s ease;
     }
 
-    .cavi-suggestions.pushed-up {
-      margin-bottom: 12px;
-    }
-
     .cavi-suggestion-chip {
       display: flex;
       align-items: center;
@@ -451,6 +483,7 @@
       padding: 16px;
       background: #fff;
       margin-bottom: 32px;
+      flex: 0 0 auto;
     }
 
     .cavi-standalone-input-top {
@@ -558,24 +591,21 @@
 
     /* Messages area */
     .cavi-standalone-messages {
+      flex: 1 1 auto;
+      min-height: 0;
       overflow-y: auto;
+      overscroll-behavior: contain;
+      scrollbar-gutter: stable;
       margin-bottom: 16px;
-      min-height: 0;
-      max-height: 0;
-      transition: max-height 0.35s ease, min-height 0.35s ease, margin 0.35s ease;
     }
 
-    .cavi-standalone-messages.has-messages {
-      min-height: 120px;
-      max-height: 360px;
-      margin-top: 8px;
-    }
-
-    .cavi-standalone-messages:empty {
-      display: block;
-      min-height: 0;
-      max-height: 0;
+    .cavi-standalone-messages:has(.cavi-message-content:empty) {
+      flex: 0 0 0;
       margin: 0;
+    }
+
+    .cavi-message-content:empty {
+      min-height: 0;
     }
 
     /* Chat messages */
@@ -628,6 +658,10 @@
     .cavi-trust-section {
       margin-top: auto;
       padding-top: 24px;
+    }
+
+    .cavi-main-inner.conversation-active .cavi-trust-section {
+      display: none;
     }
 
     .cavi-mini-stats {
@@ -1293,6 +1327,19 @@
       .cavi-main-inner {
         padding: 24px;
       }
+      .cavi-standalone-body.conversation-active {
+        flex-direction: row;
+      }
+      .cavi-standalone-body.conversation-active .cavi-sidebar {
+        display: none;
+      }
+      .cavi-main-inner.conversation-active {
+        padding: 16px;
+      }
+      .cavi-main-inner.conversation-active .cavi-standalone-input-actions {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+      }
       .cavi-chat-hero {
         flex-direction: column;
       }
@@ -1332,6 +1379,26 @@
         width: auto;
         max-width: none;
         height: calc(100vh - 80px);
+      }
+    }
+
+    @media (max-height: 700px) {
+      .cavi-standalone-body.conversation-active .cavi-sidebar {
+        display: none;
+      }
+      .cavi-main-inner.conversation-active {
+        padding-top: 12px;
+        padding-bottom: 12px;
+      }
+      .cavi-main-inner.conversation-active .cavi-view-toggle {
+        margin-bottom: 8px;
+      }
+      .cavi-main-inner.conversation-active .cavi-conversation-viewport {
+        min-height: 0;
+      }
+      .cavi-main-inner.conversation-active .cavi-standalone-input-wrap {
+        margin-bottom: 0;
+        padding: 10px;
       }
     }
 
@@ -1439,6 +1506,8 @@
             </div>
           </div>
 
+          <section class="cavi-conversation-viewport" id="conversationViewport" aria-label="Conversación con Cavi">
+            <div class="cavi-conversation-intro" id="conversationIntro">
           <!-- Chat hero -->
           <div class="cavi-chat-hero">
             <div class="cavi-chat-hero-left">
@@ -1489,9 +1558,13 @@
               <span class="chip-arrow">→</span>
             </button>
           </div>
+            </div>
 
           <!-- Messages area -->
-          <div class="cavi-standalone-messages" id="standaloneMessages"></div>
+            <div class="cavi-standalone-messages" id="standaloneMessages" role="log" aria-live="polite" aria-relevant="additions text" tabindex="0">
+              <div class="cavi-message-content" id="standaloneMessageContent"></div>
+            </div>
+          </section>
 
           <!-- Chat input -->
           <div class="cavi-standalone-input-wrap">
@@ -1665,6 +1738,7 @@
     </div>
   </div>
 
+  <script src="cavi-chat-state.js"></script>
   <script>
     const caviStandalone = document.getElementById('caviStandalone');
     const caviPanelFab = document.getElementById('caviPanelFab');
@@ -1876,48 +1950,131 @@
     }
 
     // ===== Standalone chat =====
+    let introOriginalHeight = 0;
+    let introPermanentlyHidden = false;
+    let standaloneTypingSequence = 0;
+    let historyFollowLatest = true;
+    let historyResizeObserver = null;
+
+    function isHistoryNearBottom(container) {
+      return CaviChatState.shouldFollowLatest(
+        container.scrollHeight,
+        container.clientHeight,
+        container.scrollTop,
+      );
+    }
+
+    function scrollHistoryToLatest(container, force) {
+      if (force || isHistoryNearBottom(container)) {
+        container.scrollTop = container.scrollHeight;
+      }
+    }
+
+    function initializeHistoryPinning(container) {
+      if (historyResizeObserver) return;
+
+      const intro = document.getElementById('conversationIntro');
+      container.addEventListener('scroll', () => {
+        historyFollowLatest = isHistoryNearBottom(container);
+      }, { passive: true });
+
+      if ('ResizeObserver' in window) {
+        historyResizeObserver = new ResizeObserver(() => {
+          if (historyFollowLatest) scrollHistoryToLatest(container, true);
+        });
+        historyResizeObserver.observe(container);
+      } else {
+        historyResizeObserver = { observe() {} };
+      }
+
+      intro.addEventListener('transitionend', () => {
+        if (historyFollowLatest) scrollHistoryToLatest(container, true);
+      });
+    }
+
+    function updateConversationViewport() {
+      const main = document.getElementById('caviMainInner');
+      const intro = document.getElementById('conversationIntro');
+      const messages = document.getElementById('standaloneMessages');
+      const messageContent = document.getElementById('standaloneMessageContent');
+      if (!main || !intro || !messages || !messageContent) return;
+
+      if (!introOriginalHeight && !introPermanentlyHidden) {
+        introOriginalHeight = intro.scrollHeight;
+      }
+
+      const introState = CaviChatState.advanceIntroState(
+        introPermanentlyHidden,
+        introOriginalHeight,
+        messageContent.scrollHeight,
+      );
+
+      const hasConversation = messageContent.children.length > 0;
+      main.classList.toggle('conversation-active', hasConversation);
+      main.closest('.cavi-standalone-body').classList.toggle('conversation-active', hasConversation);
+      intro.style.setProperty('--intro-visible-height', introState.visibleHeight + 'px');
+      intro.style.setProperty('--intro-collapse-progress', introState.progress);
+
+      if (introState.hidden) {
+        introPermanentlyHidden = true;
+        intro.classList.add('is-hidden');
+        intro.setAttribute('aria-hidden', 'true');
+        intro.querySelectorAll('a, button, input, select, textarea, [tabindex]').forEach((element) => {
+          element.setAttribute('tabindex', '-1');
+        });
+      }
+    }
+
     function handleStandaloneEnter(e) {
       if (e.key === 'Enter') sendStandalone();
     }
 
     function sendStandalone(text) {
       const input = document.getElementById('standaloneInput');
-      const message = text || input.value.trim();
+      const message = typeof text === 'string' ? text.trim() : input.value.trim();
       if (!message) return;
 
       if (!text) input.value = '';
 
       const container = document.getElementById('standaloneMessages');
-      const chips = document.getElementById('suggestionChips');
-      container.classList.add('has-messages');
-      if (chips) chips.classList.add('pushed-up');
-      container.innerHTML +=
+      const messageContent = document.getElementById('standaloneMessageContent');
+      initializeHistoryPinning(container);
+      messageContent.insertAdjacentHTML('beforeend',
         '<div class="cavi-msg user">' +
           '<div class="msg-avatar">👤</div>' +
           '<div class="msg-bubble">' + escapeHtml(message) + '</div>' +
-        '</div>';
-      container.scrollTop = container.scrollHeight;
+        '</div>');
+      updateConversationViewport();
+      historyFollowLatest = true;
+      scrollHistoryToLatest(container, true);
 
-      const typingId = 'typing-' + Date.now();
+      const typingId = 'typing-' + Date.now() + '-' + (++standaloneTypingSequence);
       setTimeout(() => {
-        container.innerHTML +=
+        const followTyping = isHistoryNearBottom(container);
+        historyFollowLatest = followTyping;
+        messageContent.insertAdjacentHTML('beforeend',
           '<div class="cavi-msg bot" id="' + typingId + '">' +
             '<div class="msg-avatar">👩‍💼</div>' +
             '<div class="msg-bubble"><span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span></div>' +
-          '</div>';
-        container.scrollTop = container.scrollHeight;
+          '</div>');
+        updateConversationViewport();
+        if (followTyping) scrollHistoryToLatest(container, true);
 
         setTimeout(() => {
           const typing = document.getElementById(typingId);
           if (typing) {
+            const followReply = isHistoryNearBottom(container);
+            historyFollowLatest = followReply;
             const response = getBotResponse(message);
-            typing.outerHTML =
-              '<div class="cavi-msg bot">' +
-                '<div class="msg-avatar">👩‍💼</div>' +
-                '<div class="msg-bubble">' + response + '</div>' +
-              '</div>';
+            const reply = document.createElement('div');
+            reply.className = 'cavi-msg bot';
+            reply.innerHTML =
+              '<div class="msg-avatar">👩‍💼</div>' +
+              '<div class="msg-bubble">' + response + '</div>';
+            typing.replaceWith(reply);
+            updateConversationViewport();
+            if (followReply) scrollHistoryToLatest(container, true);
           }
-          container.scrollTop = container.scrollHeight;
         }, 1200);
       }, 400);
     }
