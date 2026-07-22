@@ -44,8 +44,21 @@
     return scrollHeight - clientHeight - scrollTop <= threshold;
   }
 
+  function advanceIntroState(wasHidden, introHeight, conversationHeight) {
+    if (wasHidden) {
+      return {
+        visibleHeight: 0,
+        progress: 1,
+        hidden: true,
+      };
+    }
+
+    return calculateIntroState(introHeight, conversationHeight);
+  }
+
   return {
     calculateIntroState,
     shouldFollowLatest,
+    advanceIntroState,
   };
 });

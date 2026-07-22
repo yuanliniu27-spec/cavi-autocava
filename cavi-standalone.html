@@ -410,10 +410,6 @@
       transition: margin 0.35s ease;
     }
 
-    .cavi-suggestions.pushed-up {
-      margin-bottom: 12px;
-    }
-
     .cavi-suggestion-chip {
       display: flex;
       align-items: center;
@@ -1903,48 +1899,99 @@
     }
 
     // ===== Standalone chat =====
+    let introOriginalHeight = 0;
+    let introPermanentlyHidden = false;
+    let standaloneTypingSequence = 0;
+
+    function isHistoryNearBottom(container) {
+      return CaviChatState.shouldFollowLatest(
+        container.scrollHeight,
+        container.clientHeight,
+        container.scrollTop,
+      );
+    }
+
+    function scrollHistoryToLatest(container, force) {
+      if (force || isHistoryNearBottom(container)) {
+        container.scrollTop = container.scrollHeight;
+      }
+    }
+
+    function updateConversationViewport() {
+      const main = document.getElementById('caviMainInner');
+      const intro = document.getElementById('conversationIntro');
+      const messages = document.getElementById('standaloneMessages');
+      if (!main || !intro || !messages) return;
+
+      if (!introOriginalHeight && !introPermanentlyHidden) {
+        introOriginalHeight = intro.scrollHeight;
+      }
+
+      const introState = CaviChatState.advanceIntroState(
+        introPermanentlyHidden,
+        introOriginalHeight,
+        messages.scrollHeight,
+      );
+
+      main.classList.toggle('conversation-active', messages.children.length > 0);
+      intro.style.setProperty('--intro-visible-height', introState.visibleHeight + 'px');
+      intro.style.setProperty('--intro-collapse-progress', introState.progress);
+
+      if (introState.hidden) {
+        introPermanentlyHidden = true;
+        intro.classList.add('is-hidden');
+        intro.setAttribute('aria-hidden', 'true');
+        intro.querySelectorAll('a, button, input, select, textarea, [tabindex]').forEach((element) => {
+          element.setAttribute('tabindex', '-1');
+        });
+      }
+    }
+
     function handleStandaloneEnter(e) {
       if (e.key === 'Enter') sendStandalone();
     }
 
     function sendStandalone(text) {
       const input = document.getElementById('standaloneInput');
-      const message = text || input.value.trim();
+      const message = typeof text === 'string' ? text.trim() : input.value.trim();
       if (!message) return;
 
       if (!text) input.value = '';
 
       const container = document.getElementById('standaloneMessages');
-      const chips = document.getElementById('suggestionChips');
-      container.classList.add('has-messages');
-      if (chips) chips.classList.add('pushed-up');
-      container.innerHTML +=
+      container.insertAdjacentHTML('beforeend',
         '<div class="cavi-msg user">' +
           '<div class="msg-avatar">👤</div>' +
           '<div class="msg-bubble">' + escapeHtml(message) + '</div>' +
-        '</div>';
-      container.scrollTop = container.scrollHeight;
+        '</div>');
+      updateConversationViewport();
+      scrollHistoryToLatest(container, true);
 
-      const typingId = 'typing-' + Date.now();
+      const typingId = 'typing-' + Date.now() + '-' + (++standaloneTypingSequence);
       setTimeout(() => {
-        container.innerHTML +=
+        const followTyping = isHistoryNearBottom(container);
+        container.insertAdjacentHTML('beforeend',
           '<div class="cavi-msg bot" id="' + typingId + '">' +
             '<div class="msg-avatar">👩‍💼</div>' +
             '<div class="msg-bubble"><span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span></div>' +
-          '</div>';
-        container.scrollTop = container.scrollHeight;
+          '</div>');
+        updateConversationViewport();
+        if (followTyping) scrollHistoryToLatest(container, true);
 
         setTimeout(() => {
           const typing = document.getElementById(typingId);
           if (typing) {
+            const followReply = isHistoryNearBottom(container);
             const response = getBotResponse(message);
-            typing.outerHTML =
-              '<div class="cavi-msg bot">' +
-                '<div class="msg-avatar">👩‍💼</div>' +
-                '<div class="msg-bubble">' + response + '</div>' +
-              '</div>';
+            const reply = document.createElement('div');
+            reply.className = 'cavi-msg bot';
+            reply.innerHTML =
+              '<div class="msg-avatar">👩‍💼</div>' +
+              '<div class="msg-bubble">' + response + '</div>';
+            typing.replaceWith(reply);
+            updateConversationViewport();
+            if (followReply) scrollHistoryToLatest(container, true);
           }
-          container.scrollTop = container.scrollHeight;
         }, 1200);
       }, 400);
     }

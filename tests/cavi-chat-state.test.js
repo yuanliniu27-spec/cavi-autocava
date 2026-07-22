@@ -35,3 +35,11 @@ test('shouldFollowLatest detects proximity to the latest message', () => {
   assert.equal(shouldFollowLatest(1000, 600, 370), true);
   assert.equal(shouldFollowLatest(1000, 600, 200), false);
 });
+
+test('advanceIntroState keeps a hidden intro permanently hidden', () => {
+  assert.deepEqual(advanceIntroState(true, 420, 0), {
+    visibleHeight: 0,
+    progress: 1,
+    hidden: true,
+  });
+});
