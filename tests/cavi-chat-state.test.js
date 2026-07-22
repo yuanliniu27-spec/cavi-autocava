@@ -43,3 +43,13 @@ test('advanceIntroState keeps a hidden intro permanently hidden', () => {
     hidden: true,
   });
 });
+
+test('conversation content progressively collapses the intro', () => {
+  const firstMessage = calculateIntroState(420, 72);
+  const severalMessages = calculateIntroState(420, 216);
+
+  assert.equal(firstMessage.hidden, false);
+  assert.equal(firstMessage.visibleHeight, 348);
+  assert.ok(severalMessages.visibleHeight < firstMessage.visibleHeight);
+  assert.ok(severalMessages.visibleHeight > 0);
+});
