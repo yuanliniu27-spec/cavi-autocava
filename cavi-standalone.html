@@ -60,20 +60,18 @@
     }
 
     .cavi-standalone-nav .ac-logo {
-      font-size: 22px;
-      font-weight: 900;
-      letter-spacing: -1px;
-      color: #000;
-      line-height: 1;
+      display: block;
+      flex: 0 0 auto;
+      width: 92px;
+      height: 48px;
     }
 
-    .cavi-standalone-nav .ac-logo span {
+    .cavi-standalone-nav .ac-logo img {
       display: block;
-      font-size: 9px;
-      font-weight: 700;
-      letter-spacing: 2.5px;
-      color: #000;
-      text-transform: uppercase;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      mix-blend-mode: multiply;
     }
 
     .cavi-standalone-nav .ac-menu {
@@ -329,6 +327,16 @@
       align-items: center;
       justify-content: center;
       font-size: 40px;
+      overflow: hidden;
+    }
+
+    .cavi-chat-hero-avatar img {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+      object-position: center 18%;
+      display: block;
     }
 
     .cavi-chat-hero-avatar .hola-badge {
@@ -599,6 +607,14 @@
       justify-content: center;
       font-size: 14px;
       flex-shrink: 0;
+      overflow: hidden;
+    }
+
+    .cavi-msg .msg-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
     }
 
     .cavi-msg.bot .msg-avatar { background: #f0edff; }
@@ -1068,6 +1084,16 @@
       align-items: center;
       justify-content: center;
       font-size: 28px;
+      overflow: hidden;
+    }
+
+    .cavi-half-panel-avatar-img img {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+      object-position: center 18%;
+      display: block;
     }
 
     .cavi-half-panel-avatar-img .hola-badge {
@@ -1391,7 +1417,9 @@
   <div class="cavi-standalone active" id="caviStandalone">
     <!-- Yellow top nav -->
     <nav class="cavi-standalone-nav">
-      <div class="ac-logo">AUTO CAVA<span>ENCUENTRA TU AUTO IDEAL</span></div>
+      <a class="ac-logo" href="index.html" aria-label="AutoCava - Inicio">
+        <img src="assets/autocava-logo.png" alt="AutoCava">
+      </a>
       <ul class="ac-menu">
         <li><a href="#" onclick="showEmbedWithPanel('https://www.autocava.com.mx/'); return false;">Inicio</a></li>
         <li><a href="#" onclick="showEmbedWithPanel('https://www.autocava.com.mx/finance'); return false;">Financiamiento</a></li>
@@ -1447,7 +1475,7 @@
                 <span class="status-dot"></span>
               </div>
               <div class="cavi-chat-hero-avatar">
-                <span>👩‍💼</span>
+                <img src="assets/cavi-avatar.png" alt="Cavi">
                 <span class="hola-badge">Hola 👋</span>
               </div>
             </div>
@@ -1622,7 +1650,7 @@
     <div class="cavi-half-panel-body">
       <div class="cavi-half-panel-avatar">
         <div class="cavi-half-panel-avatar-img">
-          <span>👩‍💼</span>
+          <img src="assets/cavi-avatar.png" alt="Cavi">
           <span class="hola-badge">Hola 👋</span>
         </div>
         <div class="cavi-half-panel-avatar-text">
@@ -1861,7 +1889,7 @@
       setTimeout(() => {
         const caviMsg = document.createElement('div');
         caviMsg.className = 'cavi-msg bot';
-        caviMsg.innerHTML = '<div class="msg-avatar" style="width:28px;height:28px;border-radius:50%;background:#f0edff;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;">👩‍💼</div><div class="msg-bubble">' + reply + '</div>';
+        caviMsg.innerHTML = '<div class="msg-avatar"><img src="assets/cavi-avatar.png" alt="Cavi"></div><div class="msg-bubble">' + reply + '</div>';
         messages.appendChild(caviMsg);
         messages.scrollTop = messages.scrollHeight;
       }, 600);
@@ -1902,7 +1930,7 @@
       setTimeout(() => {
         container.innerHTML +=
           '<div class="cavi-msg bot" id="' + typingId + '">' +
-            '<div class="msg-avatar">👩‍💼</div>' +
+            '<div class="msg-avatar"><img src="assets/cavi-avatar.png" alt="Cavi"></div>' +
             '<div class="msg-bubble"><span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span></div>' +
           '</div>';
         container.scrollTop = container.scrollHeight;
@@ -1913,7 +1941,7 @@
             const response = getBotResponse(message);
             typing.outerHTML =
               '<div class="cavi-msg bot">' +
-                '<div class="msg-avatar">👩‍💼</div>' +
+                '<div class="msg-avatar"><img src="assets/cavi-avatar.png" alt="Cavi"></div>' +
                 '<div class="msg-bubble">' + response + '</div>' +
               '</div>';
           }
