@@ -395,6 +395,16 @@
       font-size: 32px;
       flex-shrink: 0;
       position: relative;
+      overflow: hidden;
+    }
+
+    .cavi-avatar img {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+      object-position: center 18%;
+      display: block;
     }
 
     .cavi-avatar::after {
@@ -620,6 +630,15 @@
       justify-content: center;
       font-size: 14px;
       flex-shrink: 0;
+      overflow: hidden;
+    }
+
+    .cavi-msg .msg-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 18%;
+      display: block;
     }
 
     .cavi-msg.bot .msg-avatar { background: #f0edff; }
@@ -891,7 +910,7 @@
 
     <div class="cavi-body" id="caviBody">
       <div class="cavi-avatar-row">
-        <div class="cavi-avatar">👩‍💼</div>
+        <div class="cavi-avatar"><img src="assets/cavi-avatar.png" alt="Cavi"></div>
         <div class="cavi-greeting">
           <h3>¡Hola! Soy Cavi</h3>
           <p>Asesor de compra de vehiculos</p>
@@ -1050,9 +1069,10 @@
       const body = document.getElementById('caviBody');
       const msgDiv = document.createElement('div');
       msgDiv.className = 'cavi-msg ' + sender;
-      msgDiv.innerHTML =
-        '<div class="msg-avatar">' + (sender === 'user' ? '👤' : '👩‍💼') + '</div>' +
-        '<div class="msg-bubble">' + text + '</div>';
+      const avatarHtml = sender === 'user'
+        ? '<div class="msg-avatar">👤</div>'
+        : '<div class="msg-avatar"><img src="assets/cavi-avatar.png" alt="Cavi"></div>';
+      msgDiv.innerHTML = avatarHtml + '<div class="msg-bubble">' + text + '</div>';
       body.appendChild(msgDiv);
       body.scrollTop = body.scrollHeight;
     }
